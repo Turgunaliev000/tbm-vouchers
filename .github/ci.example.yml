@@ -1,0 +1,35 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Backend tests against PostgreSQL
+        run: docker compose --profile test run --build --rm test
+      - name: Check Rust formatting
+        run: docker compose --profile test run --rm --no-deps test cargo fmt --check
+      - name: Check Rust with Clippy
+        run: docker compose --profile test run --rm --no-deps test cargo clippy --locked --all-targets -- -D warnings
+      - name: Verify generated API is current
+        run: |
+          ./scripts/generate-api.sh
+          git diff --exit-code -- openapi.json frontend/src/lib/api-schema.d.ts
+      - name: Build and start application
+        run: docker compose up --build -d --wait
+      - name: Browser tests
+        working-directory: frontend
+        run: |
+          npx playwright install --with-deps chromium
+          npx playwright test
+      - name: Logs
+        if: failure()
+        run: docker compose logs
+      - name: Stop containers
+        if: always()
+        run: docker compose down

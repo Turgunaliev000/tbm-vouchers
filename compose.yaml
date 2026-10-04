@@ -1,0 +1,53 @@
+name: tbm-vouchers
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: tbm
+      POSTGRES_PASSWORD: tbm_local
+      POSTGRES_DB: tbm
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tbm -d tbm"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgres://tbm:tbm_local@db:5432/tbm
+      RUST_LOG: info
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  frontend:
+    build: ./frontend
+    ports:
+      - "127.0.0.1:${PORT:-8080}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+  test:
+    profiles: ["test"]
+    build:
+      context: ./backend
+      target: development
+    environment:
+      DATABASE_URL: postgres://tbm:tbm_local@db:5432/postgres
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - cargo_registry:/usr/local/cargo/registry
+      - cargo_target:/app/target
+    command: ["cargo", "test", "--locked"]
+volumes:
+  postgres_data:
+  cargo_registry:
+  cargo_target:

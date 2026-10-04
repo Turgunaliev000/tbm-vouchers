@@ -1,0 +1,110 @@
+@import "tailwindcss";
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: #fff;
+  --color-secondary: #f1f2f5;
+  --color-secondary-foreground: #333943;
+  --color-muted: #f4f5f7;
+  --color-muted-foreground: #737b88;
+  --color-accent: #f1f2f5;
+  --color-accent-foreground: #171b24;
+  --color-destructive: #cc3828;
+  --color-border: #e5e7ec;
+  --color-input: #e0e3e8;
+  --color-ring: #de4632;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+}
+:root {
+  --background: #f8f9fb;
+  --foreground: #20242e;
+  --primary: #df4733;
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+@layer base {
+  * {
+    border-color: #e5e7ec;
+  }
+}
+body {
+  margin: 0;
+  min-width: 320px;
+}
+button,
+select {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+}
+select,
+input {
+  font: inherit;
+}
+select:focus-visible,
+a:focus-visible {
+  outline: 2px solid #df4733;
+  outline-offset: 3px;
+}
+::selection {
+  background: #fbd8d0;
+}
+.card {
+  background: white;
+  border: 1px solid #e5e7ec;
+  border-radius: 12px;
+  box-shadow: 0 2px 3px #17203a02;
+}
+.field {
+  height: 42px;
+  width: 100%;
+  border: 1px solid #e0e3e8;
+  border-radius: 7px;
+  background: white;
+  padding: 0 12px;
+  font-size: 13px;
+  color: #343b47;
+}
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.page-enter {
+  animation: enter 0.3s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.product-card {
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+.product-card:hover {
+  border-color: #d5d9e2;
+  box-shadow: 0 7px 24px #17203a08;
+  transform: translateY(-2px);
+}
